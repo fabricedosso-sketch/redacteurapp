@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "12782484046",
+    "project_id": "redacteur-app",
+    "storage_bucket": "redacteur-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12782484046:android:f87a354a3b98cae061611f",
+        "android_client_info": {
+          "package_name": "com.example.redacteurapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa6CHdRBHTjYcbAaigDASbge6L9XqVVbs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
