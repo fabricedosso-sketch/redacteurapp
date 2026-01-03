@@ -4,6 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:redacteurapp/database/redacteur_provider_riverpod.dart';
 import 'package:redacteurapp/model/redacteur.dart';
 
+/// Page de confirmation de suppression d'un rédacteur.
+/// 
+/// Affiche les informations du rédacteur à supprimer et demande une confirmation
+/// explicite avant l'action destructive. Pattern UX critique pour éviter les
+/// suppressions accidentelles.
 class SupprimerRedacteurPage extends ConsumerStatefulWidget {
   final String redacteurId;
   final Redacteur redacteurData;
@@ -23,6 +28,7 @@ class _SupprimerRedacteurPageState
     extends ConsumerState<SupprimerRedacteurPage> {
   bool _isLoading = false;
 
+  // Style pour le bouton d'annulation (outlined)
   final ButtonStyle styleBoutonAnnuler = OutlinedButton.styleFrom(
     padding: const EdgeInsets.symmetric(
       vertical: 15
@@ -40,8 +46,9 @@ class _SupprimerRedacteurPageState
     ),
   );
  
+  // Style pour le bouton de suppression (rouge = danger)
   final ButtonStyle styleBoutonSupp = ElevatedButton.styleFrom(
-    backgroundColor: Colors.pink,
+    backgroundColor: Colors.red,
     padding: const EdgeInsets.symmetric( 
       vertical: 15
     ),
@@ -54,6 +61,10 @@ class _SupprimerRedacteurPageState
     ),
   );
 
+  /// Exécute la suppression du rédacteur dans Firebase.
+  /// 
+  /// barrierDismissible: false empêche la fermeture accidentelle du dialog
+  /// de succès en cliquant à l'extérieur.
   Future<void> _supprimerRedacteur() async {
     setState(() => _isLoading = true);
 
@@ -64,7 +75,7 @@ class _SupprimerRedacteurPageState
       if (mounted) {
         showDialog(
           context: context,
-          barrierDismissible: false,
+          barrierDismissible: false, // Force l'utilisateur à cliquer sur OK
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(
@@ -103,8 +114,8 @@ class _SupprimerRedacteurPageState
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Ferme le dialog
+                    Navigator.of(context).pop(); // Retour à la liste
                   },
                   child: Text(
                     'OK',
@@ -139,6 +150,8 @@ class _SupprimerRedacteurPageState
             duration: const Duration(seconds: 2),
           ),
         );
+        // Réinitialise le loader uniquement en cas d'erreur
+        // (en cas de succès, on quitte la page donc pas besoin)
         setState(() => _isLoading = false);
       }
     }
@@ -164,17 +177,22 @@ class _SupprimerRedacteurPageState
         ),
         centerTitle: true,
       ),
+      
+      // Interface de confirmation centrée avec avertissements visuels
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Icône d'avertissement pour signaler l'action dangereuse
             const Icon(
               Icons.warning_amber_rounded,
               size: 120,
               color: Colors.red,
             ),
             const SizedBox(height: 5),
+            
+            // Titre d'alerte en rouge
              Text(
               'Attention !',
               style: GoogleFonts.dmSans(
@@ -186,6 +204,8 @@ class _SupprimerRedacteurPageState
               ),
             ),
             const SizedBox(height: 10),
+            
+            // Message de confirmation
              Text(
               'Êtes-vous sûr de vouloir supprimer ce rédacteur ?',
               textAlign: TextAlign.center,
@@ -196,6 +216,9 @@ class _SupprimerRedacteurPageState
               ),
             ),
             const SizedBox(height: 10),
+            
+            // Card affichant les détails du rédacteur à supprimer
+            // Permet à l'utilisateur de vérifier qu'il supprime bien la bonne personne
             Card(
               elevation: 2,
               child: Padding(
@@ -205,6 +228,7 @@ class _SupprimerRedacteurPageState
                   children: [
                     Row(
                       children: [
+                        // Avatar avec initiales
                         CircleAvatar(
                           radius: 30,
                           backgroundColor: Colors.pink,
@@ -220,6 +244,8 @@ class _SupprimerRedacteurPageState
                           ),
                         ),
                         const SizedBox(width: 15),
+                        
+                        // Informations du rédacteur
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,19 +261,19 @@ class _SupprimerRedacteurPageState
                                 ),
                               ),
                               Text(
-                                widget.redacteurData.specialite,
+                                widget.redacteurData.email,
                                 style: GoogleFonts.dmSans(
                                   textStyle: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     color: Colors.grey,
                                   ),
                                 ),
                               ),
                               Text(
-                                widget.redacteurData.email,
+                                widget.redacteurData.specialite,
                                 style: GoogleFonts.dmSans(
                                   textStyle: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     color: Colors.grey,
                                   ),
                                 ),
@@ -262,6 +288,8 @@ class _SupprimerRedacteurPageState
               ),
             ),
             const SizedBox(height: 20),
+            
+            // Avertissement final sur l'irréversibilité
              Text(
               'Cette action est irréversible !',
               style: GoogleFonts.dmSans(
@@ -273,8 +301,12 @@ class _SupprimerRedacteurPageState
               ),
             ),
             const SizedBox(height: 30),
+            
+            // Boutons d'action : Annuler (outlined) et Supprimer (rouge)
+            // Disposition côte à côte avec poids égal (Expanded)
             Row(
               children: [
+                // Bouton d'annulation - retour sans action
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _isLoading
@@ -296,6 +328,8 @@ class _SupprimerRedacteurPageState
                   ),
                 ),
                 const SizedBox(width: 10),
+                
+                // Bouton de suppression - action destructive
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _supprimerRedacteur,

@@ -7,11 +7,16 @@ import 'package:redacteurapp/pages/page_ajout_redacteur.dart';
 import 'package:redacteurapp/pages/page_modif_redacteur.dart';
 import 'package:redacteurapp/pages/page_supp_redacteur.dart';
 
+/// Page d'affichage de la liste des rédacteurs avec gestion des états asyncrones.
+/// 
+/// Utilise ConsumerWidget pour écouter le StreamProvider et reconstruire
+/// automatiquement l'UI lors des modifications Firebase en temps réel.
 class RedacteurInfoPage extends ConsumerWidget {
   const RedacteurInfoPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Écoute le stream Firebase via Riverpod - reconstruction automatique lors des changements
     final redacteursAsync = ref.watch(redacteursStreamProvider);
 
     return Scaffold(
@@ -32,6 +37,8 @@ class RedacteurInfoPage extends ConsumerWidget {
         ),
         centerTitle: true,
       ),
+      
+      // FAB pour accès rapide à la création
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           Navigator.push(
@@ -48,8 +55,12 @@ class RedacteurInfoPage extends ConsumerWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      
+      // Gestion des 3 états possibles du Stream : data, loading, error
       body: redacteursAsync.when(
+        // État data : liste chargée avec succès
         data: (redacteurs) {
+          // Empty state avec message d'encouragement
           if (redacteurs.isEmpty) {
             return Center(
               child: Column(
@@ -85,6 +96,7 @@ class RedacteurInfoPage extends ConsumerWidget {
             );
           }
 
+          // Liste scrollable des rédacteurs
           return ListView.builder(
             padding: const EdgeInsets.all(5),
             itemCount: redacteurs.length,
@@ -94,11 +106,15 @@ class RedacteurInfoPage extends ConsumerWidget {
             },
           );
         },
+        
+        // État loading : affichage pendant le chargement initial
         loading: () => const Center(
           child: CircularProgressIndicator(
             color: Colors.pink,
           ),
         ),
+        
+        // État error : affichage en cas d'échec de connexion Firebase
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -126,6 +142,12 @@ class RedacteurInfoPage extends ConsumerWidget {
   }
 }
 
+/// Widget représentant une carte individuelle de rédacteur.
+/// 
+/// Extrait dans un widget séparé pour :
+/// - Améliorer la lisibilité du code
+/// - Faciliter la réutilisation
+/// - Optimiser les reconstructions (seule la carte modifiée est rebuildée)
 class _RedacteurCard extends StatelessWidget {
   final Redacteur redacteur;
 
@@ -141,6 +163,8 @@ class _RedacteurCard extends StatelessWidget {
           start: 5, 
           end: 1
         ),
+        
+        // Avatar circulaire avec initiales du rédacteur
         leading: CircleAvatar(
           radius: 30,
           backgroundColor: Colors.pink,
@@ -155,6 +179,8 @@ class _RedacteurCard extends StatelessWidget {
             ),
           ),
         ),
+        
+        // Nom complet du rédacteur (utilise le getter nomComplet du modèle)
         title: Text(
           redacteur.nomComplet,
           style: GoogleFonts.dmSans(
@@ -165,6 +191,8 @@ class _RedacteurCard extends StatelessWidget {
             ),
           ),
         ),
+        
+        // Informations secondaires : email et spécialité
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -189,9 +217,12 @@ class _RedacteurCard extends StatelessWidget {
             ),
           ],
         ),
+        
+        // Actions CRUD : édition et suppression
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Bouton de modification - navigue vers la page d'édition
             IconButton(
               icon: const Icon(
                 Icons.edit, 
@@ -209,6 +240,8 @@ class _RedacteurCard extends StatelessWidget {
                 );
               },
             ),
+            
+            // Bouton de suppression - navigue vers la page de confirmation
             IconButton(
               icon: const Icon(
                 Icons.delete, 

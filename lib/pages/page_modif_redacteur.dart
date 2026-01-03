@@ -4,6 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:redacteurapp/database/redacteur_provider_riverpod.dart';
 import 'package:redacteurapp/model/redacteur.dart';
 
+/// Page de modification d'un rédacteur existant.
+/// 
+/// Reçoit les données du rédacteur en paramètre pour pré-remplir le formulaire.
+/// Utilise ConsumerStatefulWidget pour combiner state management local et Riverpod.
 class ModifierRedacteurPage extends ConsumerStatefulWidget {
   final String redacteurId;
   final Redacteur redacteurData;
@@ -21,12 +25,16 @@ class ModifierRedacteurPage extends ConsumerStatefulWidget {
 
 class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
   final _formKey = GlobalKey<FormState>();
+  
+  // late = initialisés dans initState avec les données existantes
   late TextEditingController _nomController;
   late TextEditingController _prenomController;
   late TextEditingController _emailController;
   late TextEditingController _specialiteController;
   bool _isLoading = false;
 
+  /// Initialise les controllers avec les valeurs actuelles du rédacteur.
+  /// Permet à l'utilisateur de voir et modifier les données existantes.
   @override
   void initState() {
     super.initState();
@@ -62,6 +70,10 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
     super.dispose();
   }
 
+  /// Soumet les modifications au repository Firebase.
+  /// 
+  /// Flow: validation → loader → update Firebase → dialog succès → double pop
+  /// Le double pop retire la page de modification ET le dialog
   Future<void> _enregistrerModifications() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -116,9 +128,10 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
                 ),
                 actions: [
                   TextButton(
+                    // Double pop : ferme le dialog puis retourne à la liste
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(); // Ferme le dialog
+                      Navigator.of(context).pop(); // Retour à la liste
                     },
                     child: Text(
                       'OK',
@@ -182,6 +195,8 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
         ),
         centerTitle: true,
       ),
+      
+      // Formulaire identique à AjoutRedacteurPage mais pré-rempli
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -195,6 +210,8 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
                 color: Colors.pink
               ),
               const SizedBox(height: 5),
+              
+              // Champ Nom avec validation obligatoire
               Text(
                 "Nom",
                 style: GoogleFonts.dmSans(
@@ -218,6 +235,8 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
                 },
               ),
               const SizedBox(height: 10),
+              
+              // Champ Prénom avec validation obligatoire
               Text(
                 "Prénom(s)",
                 style: GoogleFonts.dmSans(
@@ -241,6 +260,8 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
                 },
               ),
               const SizedBox(height: 10),
+              
+              // Champ Email avec validation de format
               Text(
                 "Email",
                 style: GoogleFonts.dmSans(
@@ -269,6 +290,8 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
                 },
               ),
               const SizedBox(height: 10),
+              
+              // Champ Spécialité avec validation obligatoire
               Text(
                 "Spécialité",
                 style: GoogleFonts.dmSans(
@@ -297,6 +320,8 @@ class _ModifierRedacteurPageState extends ConsumerState<ModifierRedacteurPage> {
                 },
               ),
               const SizedBox(height: 30),
+              
+              // Bouton de soumission avec loader conditionnel
               ElevatedButton(
                 onPressed: _isLoading ? null : _enregistrerModifications,
                 style: styleBouton,

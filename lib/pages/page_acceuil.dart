@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redacteurapp/pages/page_liste_redacteur.dart';
 import 'package:redacteurapp/pages/page_ajout_redacteur.dart';
-import '../widgets/partie_titre.dart';
-import '../widgets/partie_texte.dart';
-import '../widgets/partie_icone.dart';
-import '../widgets/partie_rubrique.dart';
+import 'package:redacteurapp/widgets/partie_titre.dart';
+import 'package:redacteurapp/widgets/partie_texte.dart';
+import 'package:redacteurapp/widgets/partie_icone.dart';
+import 'package:redacteurapp/widgets/partie_rubrique.dart';
 
+/// Page d'accueil principale avec navigation drawer et sections de contenu modulaires.
 class PageAcceuil extends StatelessWidget {
   const PageAcceuil({super.key});
 
-// Déclaration d'une fonction build() qui se subtitue à la classe mère et retourne le widget Scaffold qui contient tous les elements visibles de la page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar standard avec branding et icône de navigation
       appBar:  AppBar(
         backgroundColor: Colors.pink,
         iconTheme: IconThemeData(
@@ -31,10 +32,13 @@ class PageAcceuil extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+      
+      // Menu latéral avec navigation vers les fonctionnalités CRUD
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
+            // Header du drawer
              DrawerHeader(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -51,6 +55,8 @@ class PageAcceuil extends StatelessWidget {
                 ),
               ),
             ),
+            
+            // Navigation vers la page de création
             ListTile(
               leading: const Icon(
                 Icons.edit,
@@ -73,6 +79,8 @@ class PageAcceuil extends StatelessWidget {
                 );
               },
             ),
+            
+            // Navigation vers la page de listing
             ListTile(
               leading: const Icon(
                 Icons.person,
@@ -99,13 +107,16 @@ class PageAcceuil extends StatelessWidget {
         ),
       ),
       
-      // Declaration d'un widget pour l'affichage du contenu principale de l'app avec des propriétés enfants comme une image dans notre cas et les autres blocs de notre page d'acceuil.
-      // Le widget body regroupe tous les propriétés du corps principal de l'app
+      // Contenu principal : image hero + sections de contenu empilées verticalement
+      // SingleChildScrollView permet le défilement si le contenu dépasse la hauteur de l'écran
       body: SingleChildScrollView(
         child:  Column(
         children: [
+          // Image d'en-tête (asset local)
           Image(
           image: AssetImage('assets/images/img3.jpg')),
+          
+          // Sections de contenu modulaires - peuvent être réorganisées ou supprimées
           PartieTitre(),
           PartieTexte(),
           PartieIcone(),
@@ -116,9 +127,3 @@ class PageAcceuil extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
